@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Admin Panal</h1>
+<table class="table table-bordered table-striped">
+   <thead>
+        <tr>
+            <th>User</th>
+            <th>Action</th>
+        </tr>
+   </thead>
+   <tbody>
+       @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Email</td>
+                <td>
+                    <a asp-action="ManageUserRoles" asp-route-userId="@item.Id" class="btn btn-primary btn-sm">Manage Role</a>
+                </td>
+            </tr>
+        }
+   </tbody>
+</table>
+<a asp-action="ListRoles" class="btn btn-secondary">Manage Role List</a>
+

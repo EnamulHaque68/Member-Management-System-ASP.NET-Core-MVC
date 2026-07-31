@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\IsBD\\Core\\SubmitedProject\\1292556 (1)\\1292556 (1)\\1292556\\CoreIdentityWithOWINSln\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{BCB68C04-231D-4B7C-9C12-8F45E971D4F7}|CoreIdentityWithOWIN\\CoreIdentityWithOWIN.csproj|e:\\isbd\\core\\submitedproject\\1292556 (1)\\1292556 (1)\\1292556\\coreidentitywithowinsln\\coreidentitywithowin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BCB68C04-231D-4B7C-9C12-8F45E971D4F7}|CoreIdentityWithOWIN\\CoreIdentityWithOWIN.csproj|solutionrelative:coreidentitywithowin\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\IsBD\\Core\\SubmitedProject\\1292556 (1)\\1292556 (1)\\1292556\\CoreIdentityWithOWINSln\\CoreIdentityWithOWIN\\Program.cs",
+              "RelativeDocumentMoniker": "CoreIdentityWithOWIN\\Program.cs",
+              "ToolTip": "E:\\IsBD\\Core\\SubmitedProject\\1292556 (1)\\1292556 (1)\\1292556\\CoreIdentityWithOWINSln\\CoreIdentityWithOWIN\\Program.cs",
+              "RelativeToolTip": "CoreIdentityWithOWIN\\Program.cs",
+              "ViewState": "AgIAALQAAAAAAAAAAAAAABEAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T16:38:03.366Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+﻿@model CoreIdentityWithOWIN.Models.ViewModels.MemberViewModel
+
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">
+        <i class="fas fa-user-plus"></i> Add New Member
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <form id="createMemberForm" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <div id="errorSummary" class="alert alert-danger" style="display:none;"></div>
+
+        <div class="row">
+           
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-info-circle"></i> Member Information
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="MemberName" class="form-label fw-bold required">Member Name</label>
+                            <input asp-for="MemberName" class="form-control" />
+                            <span asp-validation-for="MemberName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="JointDate" class="form-label fw-bold">Admission Date</label>
+                            <input asp-for="JointDate" type="date" class="form-control" id="JointDate" />
+                            <span asp-validation-for="JointDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MobileNo" class="form-label fw-bold required">Mobile Number</label>
+                            <input asp-for="MobileNo" class="form-control" />
+                            <span asp-validation-for="MobileNo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TypeId" class="form-label fw-bold required">Member Type</label>
+                            <select asp-for="TypeId" class="form-select">
+                                <option value="">-- Select Member Type --</option>
+                                @foreach (var type in Model.MemberTypes)
+                                {
+                                    <option value="@type.TypeId">@type.Title</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TypeId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RegFee" class="form-label fw-bold">Registration Fee</label>
+                            <input asp-for="RegFee" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="RegFee" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label class="form-check-label fw-bold" asp-for="IsActive">Is Active</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Profile Picture</label>
+                            <div class="text-center mb-2">
+                                <img id="imagePreview" src="/Images/noimages.png" alt="Preview" class="image-preview" />
+                            </div>
+                            <input type="file" name="ProfileFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                            <small class="text-muted">JPG, PNG, GIF up to 5MB</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+      
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-warning">
+                        <i class="fas fa-book"></i> Transaction Information
+                        <button type="button" class="btn btn-sm btn-success float-end" onclick="addTransaction()">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="transactionsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Book Name</th>
+                                        <th width="100">Days</th>
+                                        <th width="50">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Transactions != null && Model.Transactions.Any())
+                                    {
+                                        for (int i = 0; i < Model.Transactions.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                           name="Transactions[@i].BookName"
+                                                           value="@Model.Transactions[i].BookName" />
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm"
+                                                           name="Transactions[@i].Duration"
+                                                           value="@Model.Transactions[i].Duration" />
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm"
+                                                       name="Transactions[0].BookName" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm"
+                                                       name="Transactions[0].Duration" />
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-save"></i> Create Member
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+ 
+    function deleteRow(btn) {
+        if ($('#transactionsTable tbody tr').length > 1) {
+            $(btn).closest('tr').remove();
+            reindexTransactions();
+        } else {
+            alert('At least one transaction is required!');
+        }
+    }
+
+
+    function addTransaction() {
+        var rowCount = $('#transactionsTable tbody tr').length;
+        var newRow = `
+            <tr>
+                <td>
+                    <input type="text" class="form-control form-control-sm"
+                           name="Transactions[${rowCount}].BookName" />
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm"
+                           name="Transactions[${rowCount}].Duration" />
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        $('#transactionsTable tbody').append(newRow);
+    }
+
+   
+    function reindexTransactions() {
+        $('#transactionsTable tbody tr').each(function(index) {
+            $(this).find('input[name^="Transactions"]').each(function() {
+                var name = $(this).attr('name');
+                if (name) {
+                    name = name.replace(/Transactions\[\d+\]/, 'Transactions[' + index + ']');
+                    $(this).attr('name', name);
+                }
+            });
+        });
+    }
+
+    
+    function closeModal() {
+        $('#modalContainer').empty();
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+    }
+
+    $(document).ready(function() {
+      
+        if (!$('#JointDate').val()) {
+            var today = new Date().toISOString().split('T')[0];
+            $('#JointDate').val(today);
+        }
+
+       
+        $('#createMemberForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+           
+            var validTransactions = [];
+            $('#transactionsTable tbody tr').each(function() {
+                var bookName = $(this).find('input[name*="BookName"]').val();
+                if (bookName && bookName.trim() !== '') {
+                    validTransactions.push({
+                        BookName: bookName,
+                        Duration: $(this).find('input[name*="Duration"]').val()
+                    });
+                }
+            });
+            for (var pair of formData.entries()) {
+                if (pair[0].includes('Transactions')) {
+                    formData.delete(pair[0]);
+                }
+            }
+            validTransactions.forEach(function(trans, idx) {
+                formData.append(`Transactions[${idx}].BookName`, trans.BookName);
+                formData.append(`Transactions[${idx}].Duration`, trans.Duration);
+            });
+
+            $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+            $('#errorSummary').hide().empty();
+
+            $.ajax({
+                url: '/Members/CreateMember',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        closeModal();
+                        location.reload();
+                    } else {
+                        $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Create Member');
+                        var errorMsg = '<ul class="mb-0">';
+                        if (response.errors) {
+                            if (typeof response.errors === 'object') {
+                                for (var key in response.errors) {
+                                    if (Array.isArray(response.errors[key])) {
+                                        for (var i = 0; i < response.errors[key].length; i++) {
+                                            errorMsg += '<li>' + response.errors[key][i] + '</li>';
+                                        }
+                                    } else {
+                                        errorMsg += '<li>' + response.errors[key] + '</li>';
+                                    }
+                                }
+                            } else {
+                                errorMsg += '<li>' + response.errors + '</li>';
+                            }
+                        }
+                        errorMsg += '</ul>';
+                        $('#errorSummary').html('<i class="fas fa-exclamation-triangle"></i> ' + errorMsg).show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Create Member');
+                    $('#errorSummary').html('<i class="fas fa-exclamation-triangle"></i> Error: ' + error).show();
+                }
+            });
+        });
+    });
+</script>

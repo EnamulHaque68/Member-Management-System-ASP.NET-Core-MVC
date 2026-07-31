@@ -1,0 +1,45 @@
+﻿@model IEnumerable<CourseHeadCount>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css" />
+    <title>Default</title>
+</head>
+<body>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Member Type</th>
+                <th>Member Count</th>
+                <th>Total Collection</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Count</td>
+                    <td>@item.TotalCollection.ToString("C2")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    Grand Total
+                </td>
+                <td>
+                    <strong> @Model.Sum(x => x.TotalCollection).ToString("C2")</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

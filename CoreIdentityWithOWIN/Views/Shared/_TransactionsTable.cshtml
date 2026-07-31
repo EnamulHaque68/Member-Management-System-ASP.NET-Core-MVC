@@ -1,0 +1,28 @@
+﻿@model List<Transaction>
+<table id="ExTable" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Book Name</th>
+            <th>Duration (Days)</th>
+            <th>Action</th>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input type="text" class="form-control" name="Transactions[@i].BookName" value="@Model[i].BookName" />
+                    <span class="text-danger"></span>
+                </td>
+                <td>
+                    <input type="number" class="form-control" name="Transactions[@i].Duration" value="@Model[i].Duration" />
+                    <span class="text-danger"></span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<input type="hidden" id="HIndex" value="@Model.Count" />

@@ -1,0 +1,125 @@
+﻿@model PaginatedList<Member>
+@{
+    ViewData["Title"] = "View Members";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p class="mt-3 mb-3">
+    <h1>Member Type Wise Total Member And Total Collection</h1>
+    @await Component.InvokeAsync("HeadCount")
+</p>
+
+<div class="card bg-light mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">Search Name</label>
+                <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Member name..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Active Status</label>
+                <select name="searchEnrolled" class="form-select">
+                    <option value="">-- All --</option>
+                    <option value="true" selected="@(ViewData["EnrolledFilter"]?.ToString() == "true")">Active</option>
+                    <option value="false" selected="@(ViewData["EnrolledFilter"]?.ToString() == "false")">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-3 pt-4">
+                <button type="submit" class="btn btn-primary px-4">Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <h1>Member List</h1>
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Image</th>
+                <th>
+                    <a class="text-white text-decoration-none" asp-action="Index"
+                       asp-route-sortOrder="@ViewData["NameSortParm"]"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                       asp-route-searchEnrolled="@ViewData["EnrolledFilter"]">
+                        Member Name @(ViewData["CurrentSort"]?.ToString() == "name_desc" ? "↓" : "↑")
+                    </a>
+                </th>
+                <th>Title</th>
+                <th>Joint Date</th>
+                <th>Mobile No</th>
+                <th>
+                    <a class="text-white text-decoration-none" asp-action="Index"
+                       asp-route-sortOrder="@ViewData["EnrollSortParm"]"
+                       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                       asp-route-searchEnrolled="@ViewData["EnrolledFilter"]">
+                        Status @(ViewData["CurrentSort"]?.ToString().Contains("IsActive") == true ? "↓" : "↑")
+                    </a>
+                </th>
+                <th>Transactions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@Url.Content("~/Images/" + item.ImageUrl)" height="80" width="70" onerror="this.src='@Url.Content("~/Images/noimages.png")'" />
+                    </td>
+                    <td>@Html.DisplayFor(m => item.MemberName)</td>
+                    <td>@Html.DisplayFor(m => item.MemberType.Title)</td>
+                    <td>@item.JointDate.ToString("yyyy-MM-dd")</td>
+                    <td>@Html.DisplayFor(m => item.MobileNo)</td>
+                    <td>@(item.IsActive ? "Active" : "Inactive")</td>
+                    <td>
+                        @if (item.Transactions != null && item.Transactions.Any())
+                        {
+                            <ul>
+                                @foreach (var m in item.Transactions)
+                                {
+                                    <li>@m.BookName - @m.Duration days</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span>No transactions</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted small">
+        Showing page <strong>@Model.PageIndex</strong> of <strong>@Model.TotalPages</strong>
+    </div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item @prevDisabled">
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-searchEnrolled="@ViewData["EnrolledFilter"]"
+                   class="page-link">Previous</a>
+            </li>
+            <li class="page-item @nextDisabled">
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   asp-route-searchEnrolled="@ViewData["EnrolledFilter"]"
+                   class="page-link">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>

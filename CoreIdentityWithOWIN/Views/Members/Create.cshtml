@@ -1,0 +1,325 @@
+﻿@model CoreIdentityWithOWIN.Models.ViewModels.MemberViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-user-plus"></i> Add New Member</h4>
+        </div>
+        <div class="card-body">
+            <form id="createMemberForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                
+                <div id="errorSummary" class="alert alert-danger" style="display:none;"></div>
+                
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-info-circle"></i> Member Information
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="MemberName" class="form-label fw-bold">Member Name <span class="text-danger">*</span></label>
+                                    <input asp-for="MemberName" class="form-control" />
+                                    <span asp-validation-for="MemberName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="JointDate" class="form-label fw-bold">Admission Date</label>
+                                    <input asp-for="JointDate" type="date" class="form-control" id="JointDate" />
+                                    <span asp-validation-for="JointDate" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="MobileNo" class="form-label fw-bold">Mobile Number <span class="text-danger">*</span></label>
+                                    <input asp-for="MobileNo" class="form-control" />
+                                    <span asp-validation-for="MobileNo" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="TypeId" class="form-label fw-bold">Member Type <span class="text-danger">*</span></label>
+                                    <select asp-for="TypeId" class="form-select">
+                                        <option value="">-- Select Member Type --</option>
+                                        @foreach (var type in Model.MemberTypes)
+                                        {
+                                            <option value="@type.TypeId">@type.Title</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="TypeId" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RegFee" class="form-label fw-bold">Registration Fee</label>
+                                    <input asp-for="RegFee" class="form-control" type="number" step="0.01" value="0" />
+                                    <span asp-validation-for="RegFee" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label class="form-check-label fw-bold" asp-for="IsActive">Is Active</label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Profile Picture</label>
+                                    <div class="text-center mb-2">
+                                        <img id="imagePreview" src="/Images/noimages.png" alt="Preview" style="width: 120px; height: 120px; object-fit: cover; border: 2px solid #ddd; border-radius: 8px;" />
+                                    </div>
+                                    <input type="file" name="ProfileFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                                    <small class="text-muted">JPG, PNG, GIF up to 5MB</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-warning">
+                                <i class="fas fa-book"></i> Transaction Information
+                                <button type="button" class="btn btn-sm btn-success float-end" onclick="addTransaction()">
+                                    <i class="fas fa-plus"></i> Add Transaction
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm" id="transactionsTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Book Name</th>
+                                                <th width="100">Days</th>
+                                                <th width="50">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Transactions != null && Model.Transactions.Any())
+                                            {
+                                                for (int i = 0; i < Model.Transactions.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm" 
+                                                                   name="Transactions[@i].BookName" 
+                                                                   value="@Model.Transactions[i].BookName" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm" 
+                                                                   name="Transactions[@i].Duration" 
+                                                                   value="@Model.Transactions[i].Duration" />
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" 
+                                                               name="Transactions[0].BookName" placeholder="Enter book name" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control form-control-sm" 
+                                                               name="Transactions[0].Duration" placeholder="Days" />
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-end mt-3">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Close
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i> Create Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+    
+    <script>
+        // Image preview
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Delete transaction row
+        function deleteRow(btn) {
+            if ($('#transactionsTable tbody tr').length > 1) {
+                $(btn).closest('tr').remove();
+                reindexTransactions();
+            } else {
+                alert('At least one transaction is required!');
+            }
+        }
+
+        // Add transaction row
+        function addTransaction() {
+            var rowCount = $('#transactionsTable tbody tr').length;
+            var newRow = `
+                <tr>
+                    <td>
+                        <input type="text" class="form-control form-control-sm" 
+                               name="Transactions[${rowCount}].BookName" placeholder="Enter book name" />
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm" 
+                               name="Transactions[${rowCount}].Duration" placeholder="Days" />
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            $('#transactionsTable tbody').append(newRow);
+        }
+
+        // Reindex transactions after delete
+        function reindexTransactions() {
+            $('#transactionsTable tbody tr').each(function(index) {
+                $(this).find('input[name^="Transactions"]').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/Transactions\[\d+\]/, 'Transactions[' + index + ']');
+                        $(this).attr('name', name);
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            // Set default date
+            if (!$('#JointDate').val()) {
+                var today = new Date().toISOString().split('T')[0];
+                $('#JointDate').val(today);
+            }
+
+            // Form submission
+            $('#createMemberForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = new FormData(this);
+                
+                // Clean empty transactions
+                var validTransactions = [];
+                $('#transactionsTable tbody tr').each(function() {
+                    var bookName = $(this).find('input[name*="BookName"]').val();
+                    if (bookName && bookName.trim() !== '') {
+                        validTransactions.push({
+                            BookName: bookName,
+                            Duration: $(this).find('input[name*="Duration"]').val()
+                        });
+                    }
+                });
+                
+                // Remove old transaction data
+                for (var pair of formData.entries()) {
+                    if (pair[0].includes('Transactions')) {
+                        formData.delete(pair[0]);
+                    }
+                }
+                
+                // Add valid transactions
+                validTransactions.forEach(function(trans, idx) {
+                    formData.append(`Transactions[${idx}].BookName`, trans.BookName);
+                    formData.append(`Transactions[${idx}].Duration`, trans.Duration);
+                });
+                
+                // Validate required fields
+                var memberName = $('#MemberName').val();
+                var typeId = $('#TypeId').val();
+                
+                if (!memberName) {
+                    showError('Member Name is required');
+                    return;
+                }
+                
+                if (!typeId) {
+                    showError('Please select a Member Type');
+                    return;
+                }
+                
+                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+                $('#errorSummary').hide().empty();
+                
+                $.ajax({
+                    url: '/Members/CreateMember',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = response.redirectUrl || '/Members';
+                        } else {
+                            $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Create Member');
+                            var errorMsg = '<ul class="mb-0">';
+                            if (response.errors) {
+                                if (typeof response.errors === 'object') {
+                                    for (var key in response.errors) {
+                                        if (Array.isArray(response.errors[key])) {
+                                            for (var i = 0; i < response.errors[key].length; i++) {
+                                                errorMsg += '<li>' + response.errors[key][i] + '</li>';
+                                            }
+                                        } else {
+                                            errorMsg += '<li>' + response.errors[key] + '</li>';
+                                        }
+                                    }
+                                } else {
+                                    errorMsg += '<li>' + response.errors + '</li>';
+                                }
+                            }
+                            errorMsg += '</ul>';
+                            $('#errorSummary').html('<i class="fas fa-exclamation-triangle"></i> ' + errorMsg).show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Create Member');
+                        $('#errorSummary').html('<i class="fas fa-exclamation-triangle"></i> Error: ' + error).show();
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+            
+            function showError(message) {
+                $('#errorSummary').html('<i class="fas fa-exclamation-triangle"></i> ' + message).show();
+                $('html, body').animate({ scrollTop: 0 }, 'slow');
+            }
+        });
+    </script>
+}
+
+
